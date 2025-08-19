@@ -49,3 +49,5 @@ override.cfg
 # 编译文件
 bin/
 obj/
+
+android/

@@ -19,6 +19,8 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=320
 window/size/viewport_height=480
+window/stretch/mode="viewport"
+window/handheld/orientation=1
 
 [input]
 
@@ -50,3 +52,4 @@ ui_down={
 [rendering]
 
 renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true

@@ -14,6 +14,12 @@ var score = 0
 var snake_head 
 var food_node
 
+# 触摸手势相关变量
+var touch_start_pos = Vector2()
+var touch_end_pos = Vector2()
+var is_touching = false
+const SWIPE_THRESHOLD = 50  # 滑动阈值，超过这个距离才认为是有效滑动
+
 func _ready():
 	# 初始化蛇头位置
 	
@@ -54,6 +60,7 @@ func _process(delta):
 		move_snake()
 
 func _input(event):
+	# 处理键盘输入
 	if event.is_action_pressed("ui_up") and direction != Vector2.DOWN:
 		next_direction = Vector2.UP
 	elif event.is_action_pressed("ui_down") and direction != Vector2.UP:
@@ -62,6 +69,49 @@ func _input(event):
 		next_direction = Vector2.LEFT
 	elif event.is_action_pressed("ui_right") and direction != Vector2.LEFT:
 		next_direction = Vector2.RIGHT
+	
+	# 处理触摸输入
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			# 触摸开始
+			touch_start_pos = event.position
+			is_touching = true
+		else:
+			# 触摸结束
+			if is_touching:
+				touch_end_pos = event.position
+				handle_swipe_gesture()
+				is_touching = false
+
+func handle_swipe_gesture():
+	var swipe_vector = touch_end_pos - touch_start_pos
+	var swipe_length = swipe_vector.length()
+	
+	# 检查滑动距离是否超过阈值
+	if swipe_length < SWIPE_THRESHOLD:
+		return
+	
+	# 获取主要滑动方向
+	var abs_x = abs(swipe_vector.x)
+	var abs_y = abs(swipe_vector.y)
+	
+	# 确定主要滑动方向
+	if abs_x > abs_y:
+		# 水平滑动
+		if swipe_vector.x > 0 and direction != Vector2.LEFT:
+			# 向右滑动
+			next_direction = Vector2.RIGHT
+		elif swipe_vector.x < 0 and direction != Vector2.RIGHT:
+			# 向左滑动
+			next_direction = Vector2.LEFT
+	else:
+		# 垂直滑动
+		if swipe_vector.y > 0 and direction != Vector2.UP:
+			# 向下滑动
+			next_direction = Vector2.DOWN
+		elif swipe_vector.y < 0 and direction != Vector2.DOWN:
+			# 向上滑动
+			next_direction = Vector2.UP
 
 func move_snake():
 	# 更新方向
